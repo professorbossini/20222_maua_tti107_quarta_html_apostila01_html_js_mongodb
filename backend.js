@@ -39,7 +39,8 @@ app.get('/hey', (req, res) => {
 //GET
 //localhost:3000/filmes
 //filmes
-app.get('/filmes', (req, res) => {
+app.get('/filmes', async (req, res) => {
+  const filmes = await Filme.find()
   res.json(filmes)
 })
 
