@@ -28,29 +28,36 @@ async function cadastrarFilme(){
   const titulo = tituloInput.value
   // const sinopseInput = document.querySelector('#sinopseInput')
   const sinopse = (document.querySelector('#sinopseInput')).value
-  //limpar os campos
-  tituloInput.value = ""
-  // sinopseInput.value = ""
-  document.querySelector('#sinopseInput').value = ""
-  //enviar os dados ao servidor (back end)
-  const filmes = (await axios.post(URLCompleta, {titulo, sinopse})).data
-  //encontrar a tabela
-  const tabela = document.querySelector('.filmes')
-  //encontrar o corpo da tabela
-  const corpoTabela = tabela.getElementsByTagName('tbody')[0]
-  corpoTabela.innerHTML = ""
-  for (let filme of filmes){
-    const linha = corpoTabela.insertRow(0)
-    const celulaTitulo = linha.insertCell(0)
-    const celulaSinopse = linha.insertCell(1)
-    celulaTitulo.innerHTML = filme.titulo
-    celulaSinopse.innerHTML = filme.sinopse
+  if (titulo && sinopse){
+    //limpar os campos
+    tituloInput.value = ""
+    // sinopseInput.value = ""
+    document.querySelector('#sinopseInput').value = ""
+    //enviar os dados ao servidor (back end)
+    const filmes = (await axios.post(URLCompleta, {titulo, sinopse})).data
+    //encontrar a tabela
+    const tabela = document.querySelector('.filmes')
+    //encontrar o corpo da tabela
+    const corpoTabela = tabela.getElementsByTagName('tbody')[0]
+    corpoTabela.innerHTML = ""
+    for (let filme of filmes){
+      const linha = corpoTabela.insertRow(0)
+      const celulaTitulo = linha.insertCell(0)
+      const celulaSinopse = linha.insertCell(1)
+      celulaTitulo.innerHTML = filme.titulo
+      celulaSinopse.innerHTML = filme.sinopse
+    }
   }
+  else{
+    //referenciar o alert na árvore
+    const alert = document.querySelector('.alert')
+    alert.classList.add('show')
+    alert.classList.remove('d-none')
+    setTimeout(() => {
+      alert.classList.remove('show')
+      alert.classList.add('d-none')  
+    }, 2000)
 
-
-  //pegar o que o usuário digitou
-
-
-
+  }
 }
 
