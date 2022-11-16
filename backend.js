@@ -2,6 +2,8 @@
 const express = require('express')
 const cors = require ('cors')
 const mongoose = require ('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
+const bcrypt = require ('bcrypt')
 const app = express()
 //aplicação de middleware
 app.use(express.json())
@@ -11,6 +13,14 @@ const Filme = mongoose.model('Filme', mongoose.Schema({
   titulo: {type: String},
   sinopse: {type: String}
 }))
+
+const usuarioSchema = mongoose.Schema({
+  login: {type: String, required: true, unique: true},
+  password: {type: String, required: true}
+})
+usuarioSchema.plugin(uniqueValidator)
+const Usuario = mongoose.model("Usuario", usuarioSchema)
+
 
 async function conectarAoMongoDB(){
   await mongoose.connect('mongodb+srv://professorbossini:professorbossini@cluster0.wttmkyk.mongodb.net/?retryWrites=true&w=majority')
@@ -68,6 +78,27 @@ app.post('/filmes', async (req, res) => {
   res.json(filmes)
 })
 
+
+app.post('/signup', async (req, res) => {
+  try{
+    //1. pegar login e password da requisição
+    const login = req.body.login
+    let password = req.body.password
+    //2. construir um objeto usuario da Mongoose
+    password = await bcrypt.hash(password, 10)
+    const usuario = new Usuario({login, password})
+    //3. salvar o usuário na base gerenciada pelo MongoDB
+    const resultMongoDB = await usuario.save()
+    //4. exibir o resultado no log (apenas para testes)
+    console.log(resultMongoDB)
+    //5. responder ao usuario que tudo deu certo
+    res.status(201).end()   
+  }
+  catch (erro){
+    console.log(erro)
+    res.status(409).end()
+  }
+})
 
 app.listen(3000, () => {
   try{
